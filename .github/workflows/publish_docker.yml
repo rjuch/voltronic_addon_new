@@ -37,4 +37,4 @@ jobs:
           context: .
           platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm64/v8
           push: true
-          tags: paradoxalarminterface/pai:${{ inputs.tag }}
+          tags: rjuch/voltronic_addon:${{ inputs.tag }}
