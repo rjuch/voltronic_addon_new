@@ -1,10 +1,10 @@
 {
-    "server": "[HA_MQTT_IP]",
+    "server": "192.168.1.7",
     "port": "1883",
     "topic": "homeassistant",
     "devicename": "voltronic",
-    "username": "",
-    "password": "",
+    "username": "mqtt",
+    "password": "mqtt",
 	"clientid": "voltronic_bd8041d0cdf131a6ba4e5b3360b8bc5a",
     "influx": {
         "enabled": "false",
