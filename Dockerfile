@@ -1,39 +1,25 @@
-FROM python:3.9-alpine
+FROM debian:stretch
 
-ENV WORK_DIR=workdir \
-  HASSIO_DATA_PATH=/data \
-  PAI_CONFIG_PATH=/etc/pai \
-  PAI_LOGGING_PATH=/var/log/pai \
-  PAI_MQTT_BIND_PORT=18839 \
-  PAI_MQTT_BIND_ADDRESS=0.0.0.0
+RUN apt update && apt install -y \
+        curl \
+        git \
+        build-essential \
+        cmake \
+        jq \
+        mosquitto-clients
 
-ENV PAI_CONFIG_FILE=${PAI_CONFIG_PATH}/pai.conf \
-  PAI_LOGGING_FILE=${PAI_LOGGING_PATH}/paradox.log
+ADD sources/ /opt/
+ADD config/ /etc/inverter/
 
-RUN apk add --no-cache tzdata \
-  && mkdir -p ${PAI_CONFIG_PATH} ${WORK_DIR} ${PAI_LOGGING_PATH}
+RUN cd /opt/inverter-cli && \
+    mkdir bin && cmake . && make && mv inverter_poller bin/
 
-COPY . ${WORK_DIR}
-COPY config/pai.conf.example ${PAI_CONFIG_FILE}
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=10s \
+    --start-period=1m \
+    --retries=3 \
+  CMD /opt/healthcheck
 
-# OR
-#RUN wget -c https://github.com/jpbarraca/pai/archive/master.tar.gz -O - | tar -xz --strip 1
-#RUN wget -c https://raw.githubusercontent.com/jpbarraca/pai/master/config/pai.conf.example -O ${PAI_CONFIG_PATH}/pai.conf
-
-# install python library
-RUN cd ${WORK_DIR} \
-  && pip3 install --no-cache-dir -r requirements.txt \
-  && pip3 install --no-cache-dir . \
-  && rm -fr ${WORK_DIR}
-
-# conf file from host
-VOLUME ${PAI_CONFIG_PATH}
-VOLUME ${PAI_LOGGING_PATH}
-VOLUME ${HASSIO_DATA_PATH}
-
-# For IP Interface
-EXPOSE ${PAI_MQTT_BIND_PORT}/tcp
-EXPOSE 10000/tcp
-
-# run process
-CMD pai-service
+WORKDIR /opt
+ENTRYPOINT ["/bin/bash", "/opt/inverter-mqtt/entrypoint.sh"]
