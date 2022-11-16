@@ -11,6 +11,8 @@ RUN apt update && apt install -y \
 ADD sources/ /opt/
 ADD config/ /etc/inverter/
 
+RUN chmod a+x /opt/inverter-mqtt/*.sh
+
 RUN cd /opt/inverter-cli && \
     mkdir bin && cmake . && make && mv inverter_poller bin/
 
