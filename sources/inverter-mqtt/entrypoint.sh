@@ -3,6 +3,10 @@ export TERM=xterm
 
 # stty -F /dev/ttyUSB0 2400 raw
 
+screen -dms xxx /dev/ttyUSB0 9600
+sleep 15
+pkill -f "SCREEN -dms xxx /dev/ttyUSB0 9600"
+
 # Init the mqtt server for the first time, then every 5 minutes
 # This will re-create the auto-created topics in the MQTT server if HA is restarted...
 
