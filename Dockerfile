@@ -3,6 +3,7 @@ FROM debian:stretch
 RUN apt update && apt install -y \
         curl \
         git \
+        screen \
         build-essential \
         cmake \
         jq \
